@@ -20,6 +20,8 @@
     <a class="site-title" href="#top">Yanyan Alexandra Mo</a>
     <nav class="site-nav" id="site-nav">
       <a href="#about">About</a>
+      <a href="#news">News</a>
+      <a href="#projects">Projects</a>
       <a href="#research">Research</a>
       <a href="#publications">Publications</a>
       <a href="#talks">Talks</a>
@@ -91,10 +93,89 @@
 
       <h3>Research Vision</h3>
       <p>
-        I want to make <strong>gene program discovery</strong> fast, reproducible, and interpretable —
-        building GPU-scale methods that turn millions of perturbed single cells into regulatory
-        hypotheses, and pairing them with agentic AI that grounds those hypotheses in the literature.
+        CRISPR screens now perturb thousands of genes across millions of single cells — but turning
+        that data into <em>mechanism</em> is still slow, manual, and hard to reproduce. My goal is to
+        close that gap: <strong>make gene program discovery fast enough to run at consortium scale,
+        stable enough to trust, and interpretable enough to act on.</strong> That means GPU-native
+        factorization methods <a href="#projects">(PerturbNMF)</a>, information-theoretic network
+        inference that reaches down to individual regulatory elements
+        <a href="#projects">(CRE-Finder)</a>, and agentic systems that ground the resulting programs
+        in the literature automatically <a href="#projects">(AGeneTic)</a>.
       </p>
+    </section>
+
+    <!-- News -->
+    <section id="news">
+      <h2>News</h2>
+      <ul class="news">
+        <li><span class="news-date">Aug 2026</span>
+            <span class="news-body">Received a <strong>Stanford CVI Travel Award</strong> to present PerturbNMF
+            at the IGVF Consortium Annual Meeting in St. Louis, MO.</span></li>
+        <li><span class="news-date">Jun 2026</span>
+            <span class="news-body">Our team took <strong>Second Place at the UCSF QBI Hackathon</strong> for
+            <strong>AGeneTic</strong>, an agentic LLM framework for automated gene set analysis.</span></li>
+        <li><span class="news-date">Apr 2026</span>
+            <span class="news-body">Gave an invited talk on <strong>PerturbNMF</strong> at the
+            <strong>MorPhiC Consortium</strong> Face-to-Face Meeting in Chicago, IL.</span></li>
+        <li><span class="news-date">Sep 2025</span>
+            <span class="news-body">Presented a poster on GPU-accelerated consensus NMF at the
+            <strong>IGVF Consortium Annual Meeting</strong> in Durham, NC.</span></li>
+        <li><span class="news-date">Jul 2025</span>
+            <span class="news-body">Joined the <strong>Engreitz Lab</strong> in the Department of Genetics
+            at Stanford as a Computational Research Associate.</span></li>
+        <li><span class="news-date">May 2025</span>
+            <span class="news-body">Completed my <strong>M.S. in Biomedical Engineering</strong> at
+            Johns Hopkins University.</span></li>
+        <li><span class="news-date">Oct 2024</span>
+            <span class="news-body">Presented <strong>CRE-Finder</strong> at <strong>BMES 2024</strong>
+            in Baltimore, MD.</span></li>
+      </ul>
+    </section>
+
+    <!-- Selected projects -->
+    <section id="projects">
+      <h2>Selected Projects</h2>
+      <div class="cards">
+
+        <article class="card">
+          <h3>PerturbNMF</h3>
+          <p class="card-tag">GPU &middot; Perturb-seq &middot; gene programs</p>
+          <p>
+            An end-to-end pipeline porting consensus NMF to GPU with a HALS solver. Matches CPU cNMF
+            on biological accuracy while cutting compute time up to <strong>20&times;</strong>, making
+            consortium-scale gene program analysis practical. Applied to hiPSC-to-endothelial
+            Perturb-seq, it surfaced a previously unreported role for Hippo signaling in cell fate.
+          </p>
+          <p class="card-links">
+            <a href="https://github.com/ymo6" target="_blank" rel="noopener">Code</a>
+            <span class="sep">&middot;</span>
+            <a href="#publications">Manuscript</a>
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>CRE-Finder</h3>
+          <p class="card-tag">Information theory &middot; multi-omics &middot; GRN inference</p>
+          <p>
+            An information-theoretic algorithm that reconstructs dynamic gene regulatory networks and
+            predicts distal cis-regulatory elements from single-nucleus multi-omics data — connecting
+            regulatory elements to the genes they control across developmental time.
+          </p>
+          <p class="card-links"><span class="muted">First-author manuscript in preparation</span></p>
+        </article>
+
+        <article class="card">
+          <h3>AGeneTic</h3>
+          <p class="card-tag">Agentic AI &middot; LLMs &middot; literature grounding</p>
+          <p>
+            An LLM-based agentic framework for automated gene set analysis that annotates discovered
+            gene programs against the primary literature using PaperQA2 — turning an unnamed factor
+            into a citation-backed hypothesis. Second Place, UCSF QBI Hackathon 2026.
+          </p>
+          <p class="card-links"><span class="muted">In active development</span></p>
+        </article>
+
+      </div>
     </section>
 
     <!-- Research interests -->
@@ -180,21 +261,29 @@
       <h2>Publications</h2>
 
       <h3>In Preparation</h3>
-      <p class="pub">
-        <strong>Mo, Y. A.</strong>, Pushkarev, O., Fan, I., Gupta, R., Nguyen, T., King, H., Zeng, T.,
-        Everitt, A., Kang, H., Klie, A., Carter, H., Loh, K. M., &amp; Engreitz, J. M. (2026).
-        &ldquo;PerturbNMF: an end-to-end pipeline for scalable gene program analysis.&rdquo;
-        <em>In preparation.</em>
-        <a href="https://github.com/ymo6" target="_blank" rel="noopener">[GitHub]</a>
-      </p>
+      <div class="pub">
+        <p class="pub-title">PerturbNMF: an end-to-end pipeline for scalable gene program analysis</p>
+        <p class="pub-authors">
+          <strong>Mo, Y. A.</strong>, Pushkarev, O., Fan, I., Gupta, R., Nguyen, T., King, H., Zeng, T.,
+          Everitt, A., Kang, H., Klie, A., Carter, H., Loh, K. M., &amp; Engreitz, J. M.
+        </p>
+        <p class="pub-venue"><em>In preparation</em>, 2026</p>
+        <p class="pub-links">
+          <a href="https://github.com/ymo6" target="_blank" rel="noopener">code</a>
+        </p>
+      </div>
 
       <h3>Peer-Reviewed</h3>
-      <p class="pub">
-        Cao, S., Ke, S.<sup>*</sup>, <strong>Mo, Y. A.</strong><sup>*</sup>, Huang, C., &amp; Liu, A. (2023).
-        &ldquo;Eyes are the windows to AI reliance: toward real-time human&ndash;AI reliance assessment.&rdquo;
-        <em>CHI Conference on Human Factors in Computing Systems.</em>
-        <a href="https://dl.acm.org/doi/proceedings/10.1145/3544549" target="_blank" rel="noopener">[PDF]</a>
-      </p>
+      <div class="pub">
+        <p class="pub-title">Eyes are the windows to AI reliance: toward real-time human&ndash;AI reliance assessment</p>
+        <p class="pub-authors">
+          Cao, S., Ke, S.<sup>*</sup>, <strong>Mo, Y. A.</strong><sup>*</sup>, Huang, C., &amp; Liu, A.
+        </p>
+        <p class="pub-venue"><em>CHI Conference on Human Factors in Computing Systems</em>, 2023</p>
+        <p class="pub-links">
+          <a href="https://dl.acm.org/doi/proceedings/10.1145/3544549" target="_blank" rel="noopener">pdf</a>
+        </p>
+      </div>
       <p class="footnote"><sup>*</sup> Equal contribution.</p>
     </section>
 

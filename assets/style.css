@@ -227,7 +227,70 @@ p { margin: 0 0 0.95rem; }
 .entry ul { margin: 0.4rem 0 0; padding-left: 1.15rem; }
 .entry li { margin-bottom: 0.45rem; }
 
-.pub { margin-bottom: 0.9rem; }
+/* ----- News feed ----- */
+.news { list-style: none; margin: 0; padding: 0; }
+.news li {
+  display: flex;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+}
+.news li:last-child { border-bottom: 0; }
+.news-date {
+  flex: 0 0 5.5rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.news-body { flex: 1 1 auto; }
+
+/* ----- Project cards ----- */
+.cards { display: grid; gap: 1rem; }
+.card {
+  border: 1px solid var(--rule);
+  border-left: 3px solid #8c1515;
+  border-radius: 3px;
+  padding: 1rem 1.15rem;
+  background: #fcfcfc;
+}
+.card h3 { margin: 0 0 0.2rem; font-size: 1.08rem; }
+.card p { margin: 0 0 0.6rem; }
+.card p:last-child { margin-bottom: 0; }
+.card-tag {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.card-links { font-size: 0.9rem; }
+.card-links .sep { color: var(--rule); margin: 0 0.4rem; }
+
+/* ----- Publications ----- */
+.pub { margin-bottom: 1.3rem; }
+.pub p { margin: 0; }
+.pub-title { font-weight: 600; color: var(--heading); line-height: 1.45; }
+.pub-authors { font-size: 0.92rem; line-height: 1.5; }
+.pub-venue { color: var(--text-muted); font-size: 0.9rem; }
+.pub-links { margin-top: 0.35rem !important; }
+.pub-links a {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  font-size: 0.8rem;
+  color: var(--link);
+  background: #fff;
+}
+.pub-links a:hover {
+  text-decoration: none;
+  border-color: var(--link);
+  background: var(--bg-alt);
+}
+
 .footnote { color: var(--text-muted); font-size: 0.85rem; }
 .muted { color: var(--text-muted); font-size: 0.9rem; }
 
@@ -291,4 +354,8 @@ p { margin: 0 0 0.95rem; }
 @media (max-width: 560px) {
   .pagehead { flex-direction: column; }
   .pagehead-affil { border-left: 0; border-top: 1px solid var(--rule); }
+
+  /* stack the news date above its entry rather than squeezing two columns */
+  .news li { flex-direction: column; gap: 0.15rem; }
+  .news-date { flex-basis: auto; }
 }
