@@ -161,10 +161,11 @@
           <h3>PerturbNMF</h3>
           <p class="card-tag">GPU &middot; Perturb-seq &middot; gene programs</p>
           <p>
-            An end-to-end pipeline porting consensus NMF to GPU with a HALS solver. Matches CPU cNMF
-            on biological accuracy while cutting compute time up to <strong>20&times;</strong>, making
-            consortium-scale gene program analysis practical. Applied to hiPSC-to-endothelial
-            Perturb-seq, it surfaced a previously unreported role for Hippo signaling in cell fate.
+            An end-to-end pipeline that ports Perturb-seq datasets to GPU-accelerated consensus
+            non-negative matrix factorization (cNMF), then infers, evaluates, and interprets gene
+            programs automatically. Applied to hiPSC-to-endothelial Perturb-seq, it surfaced a
+            previously unreported role for Hippo signaling in cell fate, and now runs as a core
+            component on IGVF and MorPhiC consortium datasets.
           </p>
           <p class="card-links">
             <a href="https://github.com/EngreitzLab/PerturbNMF" target="_blank" rel="noopener">Code</a>
@@ -188,9 +189,10 @@
           <h3>AGeneTic</h3>
           <p class="card-tag">Agentic AI &middot; LLMs &middot; literature grounding</p>
           <p>
-            An LLM-based agentic framework for automated gene set analysis that annotates discovered
-            gene programs against the primary literature using PaperQA2 — turning an unnamed factor
-            into a citation-backed hypothesis. Second Place, UCSF QBI Hackathon 2026.
+            An LLM-based agentic framework for automated gene program annotation and
+            literature-grounded mechanistic hypothesis generation, grounding discovered programs
+            against the primary literature with PaperQA2 — turning an unnamed factor into a
+            citation-backed hypothesis. Second Place, UCSF QBI Hackathon 2026.
           </p>
           <p class="card-links">
             <a href="https://github.com/ymo6/AGeneTic" target="_blank" rel="noopener">Code</a>
