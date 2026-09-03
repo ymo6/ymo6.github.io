@@ -1,0 +1,111 @@
+/* ===========================================================
+   Site overrides for the generated PerturbNMF report.
+   Layered AFTER style.css so the pipeline's own stylesheet can be
+   regenerated without losing these. Only touches presentation.
+   =========================================================== */
+
+:root {
+  /* tie the report to the site's palette instead of the default blue */
+  --accent: #8c1515;
+  --bg: #f7f7f8;
+  --border: #e6e8ea;
+  --border-strong: #d3d8dc;
+  --text: #24282c;
+  --text-muted: #6f767c;
+  --radius: 8px;
+  --shadow-sm: 0 1px 2px rgba(20, 24, 28, 0.05);
+  --shadow-md: 0 6px 20px rgba(20, 24, 28, 0.09);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  /* keep the report readable instead of sprawling on very wide screens */
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+  font-size: 14px;
+}
+
+/* ---- Header ---- */
+header.sticky {
+  padding: 14px 0 12px;
+  margin-bottom: 24px;
+  background: rgba(247, 247, 248, 0.88);
+}
+header.sticky h1 { font-size: 19px; letter-spacing: -0.01em; }
+h1 .pid { letter-spacing: -0.01em; }
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.back:hover {
+  color: var(--accent);
+  background: #fff;
+  border-color: var(--border-strong);
+  text-decoration: none;
+}
+
+/* ---- Condition section dividers -------------------------------
+   The report stacks ten timepoint x background blocks. Without a
+   divider they run together, so give each heading a rule.        */
+.sample-heading {
+  margin: 34px 0 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sample-heading::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+}
+.sample-badge {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 5px 12px;
+  border-radius: 5px;
+  background: rgba(140, 21, 21, 0.08);
+  color: var(--accent);
+}
+
+/* ---- Panels ---- */
+.panel {
+  padding: 15px 17px 13px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.panel:hover { transform: translateY(-1px); }
+
+.panel-title {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  color: #3a4046;
+}
+.panel-title .muted { letter-spacing: 0; }
+
+.panel.umap .panel-body img { border-radius: 5px; }
+
+/* ---- Footer ---- */
+footer {
+  margin-top: 32px;
+  padding-top: 14px;
+  font-size: 11.5px;
+}
+
+/* ---- Narrow screens: the report sits in a 560px iframe on the
+        homepage, so keep the top row from crushing.              */
+@media (max-width: 900px) {
+  body { padding-left: 18px; padding-right: 18px; }
+  .sample-heading { margin-top: 26px; }
+}
