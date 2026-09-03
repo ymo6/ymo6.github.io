@@ -289,6 +289,9 @@ p { margin: 0 0 0.95rem; }
 }
 .awards li:last-child { border-bottom: 0; }
 
+.cv-row { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+.cv-updated { color: var(--text-muted); font-size: 0.85rem; }
+
 .btn {
   display: inline-block;
   padding: 0.55rem 1.15rem;
