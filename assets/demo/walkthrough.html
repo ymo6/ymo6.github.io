@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PerturbNMF — regulator to program to mechanism</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  :root {
+    --accent:  #8c1515;
+    --accent-2:#2f6f9f;
+    --text:    #24282c;
+    --muted:   #6f767c;
+    --rule:    #e3e6e8;
+    --panel:   #ffffff;
+    --bg:      #f7f7f8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 18px 20px 26px;
+    background: var(--bg); color: var(--text);
+    font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- stage rail ---------- */
+  .rail { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+  .chip {
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 7px 15px 8px; border: 0; border-radius: 7px;
+    background: transparent; cursor: pointer; text-align: left;
+    font-family: inherit; color: #b4babe;
+    transition: color .35s ease, background .35s ease;
+  }
+  .chip .n {
+    font-family: "JetBrains Mono", monospace; font-size: 10px;
+    letter-spacing: .1em; text-transform: uppercase;
+  }
+  .chip .t { font-size: 17px; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; }
+  .chip[aria-current="true"] { color: var(--text); background: #eceef0; }
+  .chip[aria-current="true"] .n { color: var(--accent); }
+  .chip:hover { color: var(--text); }
+  .arrow { color: #d2d6d9; font-size: 20px; padding: 0 2px; user-select: none; }
+
+  .bar { height: 2px; background: #e6e8ea; border-radius: 2px; overflow: hidden; margin-bottom: 16px; }
+  .bar span { display: block; height: 100%; width: 0; background: var(--accent); }
+  .bar.run span { transition: width var(--dur, 5s) linear; }
+
+  /* ---------- stages ---------- */
+  .stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+  .stage {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 9px;
+    padding: 13px 14px 11px; min-width: 0; overflow: hidden;
+    opacity: .34; filter: grayscale(1);
+    transition: opacity .45s ease, filter .45s ease, box-shadow .45s ease, border-color .45s ease;
+  }
+  .stage.on {
+    opacity: 1; filter: none;
+    border-color: #cfd4d8;
+    box-shadow: 0 6px 22px rgba(20,24,28,.10);
+  }
+  .stage h2 {
+    margin: 0 0 2px; font-size: 11px; font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase; color: #3a4046;
+  }
+  .stage .sub { margin: 0 0 9px; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+  .stage .sub b { color: var(--accent); font-weight: 700; }
+
+  .plot { width: 100%; max-width: 100%; height: 218px; overflow: hidden; }
+  .plot.short { height: 150px; }
+  .mini + .mini { margin-top: 8px; }
+  .mini h3 {
+    margin: 0 0 1px; font-size: 9.5px; font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+  }
+
+  .callout {
+    display: inline-flex; align-items: baseline; gap: 6px;
+    margin: 0 0 8px; padding: 5px 10px; border-radius: 6px;
+    background: rgba(140,21,21,.07); color: var(--accent);
+  }
+  .callout .big { font-family: "JetBrains Mono", monospace; font-size: 19px; font-weight: 500; }
+  .callout .lbl { font-size: 11px; font-weight: 600; letter-spacing: .03em; }
+
+  .foot {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--rule);
+    font-size: 12px; color: var(--muted);
+  }
+  .foot button {
+    font: inherit; font-weight: 600; color: var(--text);
+    background: #fff; border: 1px solid #cfd4d8; border-radius: 6px;
+    padding: 4px 11px; cursor: pointer;
+  }
+  .foot button:hover { border-color: var(--accent); color: var(--accent); }
+  .foot code { font-family: "JetBrains Mono", monospace; font-size: 11px; }
+
+  /* Narrow — including inside the homepage's content column — shows one
+     step at a time rather than stacking three tall cards. */
+  @media (max-width: 980px) {
+    .stages { grid-template-columns: 1fr; }
+    .stage { opacity: 1; filter: none; }
+    .stage:not(.on) { display: none; }
+    .chip { padding: 6px 11px 7px; }
+    .chip .t { font-size: 15px; }
+    .arrow { font-size: 16px; }
+  }
+  @media (max-width: 520px) {
+    body { padding: 14px 14px 20px; }
+    .chip .t { font-size: 13.5px; }
+    .chip .n { font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="rail" id="rail">
+  <button class="chip" data-step="0" aria-current="true">
+    <span class="n">Step 1</span><span class="t">Regulator</span>
+  </button>
+  <span class="arrow">&#10230;</span>
+  <button class="chip" data-step="1">
+    <span class="n">Step 2</span><span class="t">Program</span>
+  </button>
+  <span class="arrow">&#10230;</span>
+  <button class="chip" data-step="2">
+    <span class="n">Step 3</span><span class="t">Mechanism</span>
+  </button>
+</div>
+<div class="bar" id="bar"><span id="barfill"></span></div>
+
+<div class="stages">
+
+  <section class="stage on" id="s0">
+    <h2>Regulator &mdash; PDX1 knockout</h2>
+    <p class="sub">CRISPRi knockdown of <b>PDX1</b> against non-targeting controls.</p>
+    <div class="callout"><span class="big" id="effect">&mdash;</span><span class="lbl">of control expression</span></div>
+    <div class="plot" id="p0"></div>
+  </section>
+
+  <section class="stage" id="s1">
+    <h2>Program &mdash; what shifted</h2>
+    <p class="sub">Every gene program tested against the PDX1 perturbation. <b>Program 10</b> drops
+      significantly.</p>
+    <div class="plot" id="p1" style="height:262px"></div>
+  </section>
+
+  <section class="stage" id="s2">
+    <h2>Mechanism &mdash; inside program 10</h2>
+    <p class="sub" id="s2sub">What program 10 is made of, and what it resembles.</p>
+    <div class="mini"><h3>Top loading genes</h3><div class="plot short" id="p2a"></div></div>
+    <div class="mini"><h3>GO enrichment</h3><div class="plot short" id="p2b"></div></div>
+    <div class="mini"><h3>Correlated programs</h3><div class="plot short" id="p2c"></div></div>
+  </section>
+
+</div>
+
+<div class="foot">
+  <button id="toggle">Pause</button>
+  <span id="status">Cycling automatically</span>
+  <span style="flex:1 1 auto"></span>
+  <span>MorPhiC iPSC&#8594;pancreatic knockout Perturb-seq &middot; cNMF K=30 &middot; condition <code id="cond">&mdash;</code></span>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STEP_MS = 5200;
+  var FONT = { family: '"Source Sans 3", Helvetica, Arial, sans-serif', size: 10, color: '#5c6368' };
+  var ACCENT = '#8c1515', BLUE = '#2f6f9f', GREY = '#c2c8cc';
+
+  var BASE = {
+    displayModeBar: false, responsive: true,
+    // the walkthrough is a guided read, not an exploration surface
+    staticPlot: false, scrollZoom: false, doubleClick: false
+  };
+  function layout(extra) {
+    var L = {
+      margin: { l: 46, r: 8, t: 6, b: 34 },
+      font: FONT, showlegend: false,
+      paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+      xaxis: { automargin: true, zeroline: false, gridcolor: '#eef0f2' },
+      yaxis: { automargin: true, zeroline: false, gridcolor: '#eef0f2' },
+      hoverlabel: { font: { family: FONT.family, size: 11 } }
+    };
+    Object.keys(extra || {}).forEach(function (k) {
+      if (k === 'xaxis' || k === 'yaxis' || k === 'margin') Object.assign(L[k], extra[k]);
+      else L[k] = extra[k];
+    });
+    return L;
+  }
+
+  var D, drawn = { 0: false, 1: false, 2: false };
+
+  /* ---------- step 1: knockdown vs control ---------- */
+  function draw0() {
+    var s = D.step1, pct = function (v) { return v * 100; };
+    Plotly.newPlot('p0', [{
+      type: 'bar',
+      x: ['PDX1', 'Non-targeting'],
+      y: [pct(s.pert), pct(s.ctrl)],
+      error_y: { type: 'data', array: [pct(s.pertSem), pct(s.ctrlSem)], color: '#8a9095', thickness: 1.2, width: 5 },
+      marker: { color: [ACCENT, GREY] },
+      width: [0.52, 0.52],
+      hovertemplate: '%{x}<br>%{y:.1f}% of control<extra></extra>',
+      customdata: [s.pertN, s.ctrlN]
+    }], layout({
+      yaxis: { title: { text: 'PDX1 expression (% of control)', font: { size: 10 } }, range: [0, 118], ticksuffix: '%' },
+      xaxis: { tickfont: { size: 11 } },
+      shapes: [{ type: 'line', x0: -0.5, x1: 1.5, y0: 100, y1: 100, line: { dash: 'dash', width: 1, color: '#b9bfc4' } }],
+      annotations: [
+        { x: 0, y: pct(s.pert), yshift: 30, text: 'n = ' + s.pertN.toLocaleString(), showarrow: false, font: { size: 9, color: '#8a9095' } },
+        { x: 1, y: pct(s.ctrl), yshift: 30, text: 'n = ' + s.ctrlN.toLocaleString(), showarrow: false, font: { size: 9, color: '#8a9095' } }
+      ]
+    }), BASE);
+    document.getElementById('effect').textContent = s.effectPct.toFixed(0) + '%';
+  }
+
+  /* ---------- step 2: program volcano, program 10 called out ---------- */
+  function draw1() {
+    var s = D.step2, hi = s.programs.indexOf(D.program);
+    var others = { x: [], y: [], text: [] }, target = { x: [], y: [], text: [] };
+    s.programs.forEach(function (p, i) {
+      var t = (p === D.program) ? target : others;
+      t.x.push(s.log2fc[i]); t.y.push(s.neglog10p[i]); t.text.push('Program ' + p);
+    });
+
+    Plotly.newPlot('p1', [
+      {
+        type: 'scatter', mode: 'markers+text',
+        x: others.x, y: others.y, text: others.text.map(function (t) { return t.replace('Program ', ''); }),
+        textposition: 'top center', textfont: { size: 8, color: '#a9b0b5' },
+        marker: { size: 7, color: GREY, line: { width: 0 } },
+        hovertext: others.text,
+        hovertemplate: '%{hovertext}<br>log2FC %{x:.2f}<br>-log10 p %{y:.1f}<extra></extra>'
+      },
+      {
+        type: 'scatter', mode: 'markers',
+        x: target.x, y: target.y,
+        marker: { size: 15, color: ACCENT, line: { width: 2.5, color: '#fff' } },
+        hovertext: target.text,
+        hovertemplate: '%{hovertext}<br>log2FC %{x:.2f}<br>-log10 p %{y:.1f}<extra></extra>'
+      }
+    ], layout({
+      xaxis: { title: { text: 'Effect on program expression (log2FC)', font: { size: 10 } } },
+      yaxis: { title: { text: 'Adjusted p-value (-log10)', font: { size: 10 } } },
+      shapes: [{ type: 'line', x0: 0, x1: 0, yref: 'paper', y0: 0, y1: 1, line: { dash: 'dot', width: 1, color: '#cfd4d8' } }],
+      annotations: hi > -1 ? [{
+        x: s.log2fc[hi], y: s.neglog10p[hi],
+        text: '<b>Program ' + D.program + '</b>',
+        showarrow: true, arrowhead: 0, arrowwidth: 1.2, arrowcolor: ACCENT,
+        ax: 42, ay: -26, font: { size: 11, color: ACCENT }
+      }] : []
+    }), BASE);
+    pulse();
+  }
+
+  /* the highlighted point breathes once the step opens, so the eye lands on it */
+  var pulseTimer = null;
+  function pulse() {
+    clearInterval(pulseTimer);
+    var el = document.getElementById('p1'), big = false;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    pulseTimer = setInterval(function () {
+      if (!el || !el.data) return clearInterval(pulseTimer);
+      big = !big;
+      try { Plotly.restyle(el, { 'marker.size': big ? 20 : 15 }, [1]); } catch (e) { clearInterval(pulseTimer); }
+    }, 780);
+  }
+
+  /* ---------- step 3: what program 10 is ---------- */
+  function draw2() {
+    var s = D.step3;
+    Plotly.newPlot('p2a', [{
+      type: 'bar', orientation: 'h',
+      x: s.topGenes.loadings, y: s.topGenes.genes,
+      marker: { color: ACCENT, opacity: .85 },
+      hovertemplate: '%{y}<br>loading %{x:.4f}<extra></extra>'
+    }], layout({
+      margin: { l: 4, r: 8, t: 4, b: 26 },
+      xaxis: { title: { text: 'Gene loading (z-score)', font: { size: 9 } }, tickfont: { size: 8 } },
+      yaxis: { tickfont: { size: 8.5 } }
+    }), BASE);
+
+    Plotly.newPlot('p2b', [{
+      type: 'bar', orientation: 'h',
+      x: s.go.neglog10p,
+      y: s.go.terms.map(function (t) { return t.replace(/\s*\(GO:\d+\)\s*$/, ''); }),
+      customdata: s.go.terms,
+      marker: { color: '#5b7f9c' },
+      hovertemplate: '%{customdata}<br>-log10 adj. p %{x:.1f}<extra></extra>'
+    }], layout({
+      margin: { l: 4, r: 8, t: 4, b: 26 },
+      xaxis: { title: { text: '-log10 adjusted p-value', font: { size: 9 } }, tickfont: { size: 8 } },
+      yaxis: { tickfont: { size: 8.5 } }
+    }), BASE);
+
+    Plotly.newPlot('p2c', [{
+      type: 'bar', orientation: 'h',
+      x: s.corr.r, y: s.corr.programs.map(function (p) { return 'P' + p; }),
+      marker: { color: s.corr.r.map(function (r) { return r < 0 ? BLUE : ACCENT; }) },
+      hovertemplate: 'Program %{y}<br>Pearson r %{x:.3f}<extra></extra>'
+    }], layout({
+      margin: { l: 4, r: 8, t: 4, b: 26 },
+      xaxis: { title: { text: 'Pearson r', font: { size: 9 } }, tickfont: { size: 8 } },
+      yaxis: { tickfont: { size: 8 }, type: 'category' }
+    }), BASE);
+
+    document.getElementById('s2sub').innerHTML =
+      'Program 10 is a <b>' + s.topGO.replace(/\s*\(GO:\d+\)\s*$/, '').toLowerCase() +
+      '</b> program &mdash; its top genes, enriched terms, and the programs it tracks with.';
+  }
+
+  var DRAW = [draw0, draw1, draw2];
+  var PLOT_IDS = ['p0', 'p1', 'p2a', 'p2b', 'p2c'];
+
+  /* Panels animate opacity and reflow, so a figure can be measured at the
+     wrong width. Observe each container and refit rather than guessing
+     with timeouts. */
+  function fitAll() {
+    PLOT_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.data) { try { Plotly.Plots.resize(el); } catch (e) {} }
+    });
+  }
+
+  function observeFit() {
+    if (typeof ResizeObserver === 'undefined') return;
+    var ro = new ResizeObserver(function (entries) {
+      entries.forEach(function (en) {
+        var el = en.target;
+        if (el.data) { try { Plotly.Plots.resize(el); } catch (e) {} }
+      });
+    });
+    PLOT_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) ro.observe(el);
+    });
+  }
+
+  /* ---------- stepper ---------- */
+  var step = 0, timer = null, playing = true;
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  var panels = [0, 1, 2].map(function (i) { return document.getElementById('s' + i); });
+  var bar = document.getElementById('bar'), fill = document.getElementById('barfill');
+
+  function show(i) {
+    step = i;
+    chips.forEach(function (c, j) { c.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+    panels.forEach(function (p, j) { p.classList.toggle('on', j === i); });
+    if (!drawn[i]) { DRAW[i](); drawn[i] = true; }
+    else if (i === 1) { pulse(); }
+    if (i !== 1) clearInterval(pulseTimer);
+    fitAll();
+    runBar();
+    if (window.postWalkthroughHeight) setTimeout(window.postWalkthroughHeight, 90);
+  }
+
+  function runBar() {
+    bar.classList.remove('run'); fill.style.width = '0';
+    if (!playing) return;
+    void fill.offsetWidth;
+    bar.style.setProperty('--dur', STEP_MS + 'ms');
+    bar.classList.add('run'); fill.style.width = '100%';
+  }
+
+  function play() {
+    playing = true;
+    document.getElementById('toggle').textContent = 'Pause';
+    document.getElementById('status').textContent = 'Cycling automatically';
+    clearTimeout(timer);
+    tick();
+    runBar();
+  }
+  function tick() {
+    timer = setTimeout(function () {
+      if (!playing) return;
+      show((step + 1) % 3);
+      tick();
+    }, STEP_MS);
+  }
+  function pause(msg) {
+    playing = false;
+    clearTimeout(timer);
+    bar.classList.remove('run'); fill.style.width = '0';
+    document.getElementById('toggle').textContent = 'Play';
+    document.getElementById('status').textContent = msg || 'Paused';
+  }
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      pause('Paused — step ' + (+c.dataset.step + 1) + ' of 3');
+      show(+c.dataset.step);
+    });
+  });
+  document.getElementById('toggle').addEventListener('click', function () {
+    playing ? pause() : play();
+  });
+
+  /* ---------- boot ---------- */
+  fetch('walkthrough-data.json')
+    .then(function (r) { return r.json(); })
+    .then(function (json) {
+      D = json;
+      document.getElementById('cond').textContent = D.condition;
+      show(0);
+      observeFit();
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        pause('Autoplay off (reduced motion)');
+        [0, 1, 2].forEach(function (i) { if (!drawn[i]) { DRAW[i](); drawn[i] = true; } });
+        panels.forEach(function (p) { p.classList.add('on'); });
+        requestAnimationFrame(fitAll);
+        setTimeout(fitAll, 250);
+      } else {
+        play();
+      }
+    })
+    .catch(function (e) {
+      document.getElementById('status').textContent = 'Could not load walkthrough data.';
+      console.error(e);
+    });
+
+  /* ---------- tell the embedding page how tall we are ----------
+     It cannot know, and the narrow layout shows one step at a time, so
+     the needed height changes as the walkthrough advances. */
+  var lastH = 0;
+  function postHeight() {
+    var h = Math.ceil(document.body.scrollHeight);
+    if (Math.abs(h - lastH) < 4) return;
+    lastH = h;
+    try { window.parent.postMessage({ type: 'walkthrough:height', height: h }, '*'); }
+    catch (e) { /* not embedded */ }
+  }
+  window.postWalkthroughHeight = postHeight;
+
+  var rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () { fitAll(); postHeight(); }, 180);
+  });
+  setInterval(postHeight, 700);
+})();
+</script>
+</body>
+</html>

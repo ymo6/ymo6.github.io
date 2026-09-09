@@ -233,18 +233,31 @@
     <section id="demo">
       <h2>Demo</h2>
       <p>
-        A live example of what <a href="#projects">PerturbNMF</a> produces. This is the interactive
-        per-gene report for <strong>PDX1</strong> from a MorPhiC iPSC-to-pancreatic knockout
-        Perturb-seq screen, covering ten timepoint &times; background conditions across
-        differentiation. The plots are interactive — hover for values, zoom, and toggle series.
+        <a href="#projects">PerturbNMF</a> takes a Perturb-seq screen from a knocked-down regulator to
+        a mechanistic hypothesis in three steps. The walkthrough below follows one path end to end —
+        <strong>PDX1</strong> knockdown, the program it shifts, and what that program turns out to be.
+        It advances on its own; click any step to hold there.
       </p>
-      <div class="demo-frame">
-        <iframe src="assets/demo/gene_PDX1/gene_PDX1.html" title="PerturbNMF report for gene PDX1"
+      <div class="demo-frame demo-frame--tall">
+        <iframe src="assets/demo/walkthrough.html" id="walkthrough"
+                title="PerturbNMF walkthrough: regulator to program to mechanism"
                 loading="lazy"></iframe>
       </div>
+      <p>
+        Data: MorPhiC iPSC-to-pancreatic knockout Perturb-seq, cNMF at K=30, ten
+        timepoint &times; background conditions.
+      </p>
+
+      <h3>The reports behind it</h3>
+      <p>
+        The walkthrough is a guided slice of the pipeline's real output. The full per-program and
+        per-gene reports carry every condition, with volcano plots, dot plots, and regulator
+        effects throughout — one of each is hosted here.
+      </p>
       <p class="cv-row">
-        <a class="btn" href="assets/demo/gene_PDX1/gene_PDX1.html" target="_blank" rel="noopener">Open the full report</a>
-        <span class="cv-updated">One gene of 38 from a single run; the pipeline generates a report like this for each.</span>
+        <a class="btn" href="assets/demo/program_10/program_10.html" target="_blank" rel="noopener">Program 10 report</a>
+        <a class="btn" href="assets/demo/gene_PDX1/gene_PDX1.html" target="_blank" rel="noopener">Gene PDX1 report</a>
+        <span class="cv-updated">One of 30 programs and one of 38 genes, same run.</span>
       </p>
     </section>
 
@@ -494,6 +507,16 @@
   });
   n.addEventListener('click', function (e) {
     if (e.target.tagName === 'A') { n.classList.remove('open'); t.setAttribute('aria-expanded', 'false'); }
+  });
+
+  // The demo walkthrough reports its own height: it shows one step at a
+  // time in a narrow column, so the space it needs changes as it advances.
+  window.addEventListener('message', function (e) {
+    var f = document.getElementById('walkthrough');
+    if (!f || !e.data || e.data.type !== 'walkthrough:height') return;
+    if (e.source !== f.contentWindow) return;
+    var h = parseInt(e.data.height, 10);
+    if (h > 200 && h < 4000) f.style.height = h + 'px';
   });
 </script>
 </body>

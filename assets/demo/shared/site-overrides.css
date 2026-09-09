@@ -109,3 +109,33 @@ footer {
   body { padding-left: 18px; padding-right: 18px; }
   .sample-heading { margin-top: 26px; }
 }
+
+/* ---- Give the figures room -------------------------------------
+   The generated grids pack 5 and 4 plots per row, which squeezes
+   axis labels. Fewer, wider columns and a floor on panel height let
+   Plotly's automargin (site-enhance.js) lay labels out in full.   */
+.header-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.panels-4   { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+
+.header-row .panel,
+.panels-4 .panel { min-height: 260px; }
+.panel.wide { min-height: 340px; }
+
+/* denser cells: trim panel chrome so more of each cell is the figure */
+.panel { padding: 11px 12px 9px; }
+.panel-title { margin-bottom: 8px; padding-bottom: 6px; font-size: 10px; }
+
+.panel .panel-body .js-plotly-plot { width: 100% !important; }
+
+@media (max-width: 1150px) {
+  .header-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .panels-4   { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1000px) {
+  .header-row, .panels-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .header-row, .panels-4 { grid-template-columns: 1fr; }
+  .header-row .panel, .panels-4 .panel { min-height: 300px; }
+}
+

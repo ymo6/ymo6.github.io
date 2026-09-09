@@ -366,6 +366,11 @@ p { margin: 0 0 0.95rem; }
   height: 560px;
   border: 0;
 }
+/* the walkthrough needs more room than an embedded report preview */
+.demo-frame--tall iframe { height: 800px; }
+
 @media (max-width: 700px) {
   .demo-frame iframe { height: 420px; }
+  /* stages stack to one column below 900px, so the frame gets much taller */
+  .demo-frame--tall iframe { height: 1500px; }
 }
