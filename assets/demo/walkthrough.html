@@ -353,7 +353,7 @@
   }
 
   /* ---------- stepper ---------- */
-  var step = 0, timer = null, playing = true;
+  var step = 0, timer = null, playing = false;   // first load rests on step 1
   var chips = [].slice.call(document.querySelectorAll('.chip'));
   var panels = [0, 1, 2].map(function (i) { return document.getElementById('s' + i); });
   var bar = document.getElementById('bar'), fill = document.getElementById('barfill');
@@ -419,15 +419,11 @@
       document.getElementById('cond').textContent = D.condition;
       show(0);
       observeFit();
-      if (!motionOK()) {
-        pause('Autoplay off (reduced motion)');
-        [0, 1, 2].forEach(function (i) { if (!drawn[i]) { DRAW[i](); drawn[i] = true; } });
-        panels.forEach(function (p) { p.classList.add('on'); });
-        requestAnimationFrame(fitAll);
-        setTimeout(fitAll, 250);
-      } else {
-        play();
-      }
+      // Rest on step 1 so the first frame reads as one clear step. Play starts the
+      // cycle; for reduced-motion users it stays a deliberate opt-in.
+      pause(motionOK()
+        ? 'Paused — step 1 of 3'
+        : 'Autoplay off (reduced motion) — step 1 of 3');
     })
     .catch(function (e) {
       document.getElementById('status').textContent = 'Could not load walkthrough data.';

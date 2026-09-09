@@ -374,3 +374,54 @@ p { margin: 0 0 0.95rem; }
   /* stages stack to one column below 900px, so the frame gets much taller */
   .demo-frame--tall iframe { height: 1500px; }
 }
+
+/* --- figure with caption (demo section) --------------------------------- */
+.figure {
+  margin: 0 0 1rem;
+}
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: #fff;
+}
+.figure figcaption {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* --- "applied at" logo row (demo section) ------------------------------- */
+.applied-lead {
+  margin: 1.4rem 0 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.logo-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.1rem 2.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.logo-row img {
+  display: block;
+  height: 38px;
+  width: auto;
+}
+/* the iGVF mark carries a heavy circular badge, so it needs less height to
+   sit at the same optical weight as the two wordmarks */
+.logo-row img.logo-row__mark { height: 31px; }
+
+@media (max-width: 700px) {
+  .logo-row { gap: 1rem 1.5rem; }
+  .logo-row img { height: 30px; }
+  .logo-row img.logo-row__mark { height: 25px; }
+}
