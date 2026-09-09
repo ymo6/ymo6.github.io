@@ -170,7 +170,7 @@
 (function () {
   'use strict';
 
-  var STEP_MS = 5200;
+  var STEP_MS = 3000;
   var FONT = { family: '"Source Sans 3", Helvetica, Arial, sans-serif', size: 10, color: '#5c6368' };
   var ACCENT = '#8c1515', BLUE = '#2f6f9f', GREY = '#c2c8cc';
 
@@ -196,6 +196,15 @@
   }
 
   var D, drawn = { 0: false, 1: false, 2: false };
+
+  /* Autoplay and the marker pulse are motion, so they are off for anyone
+     who asked the OS for reduced motion. `?motion=on` is an explicit
+     opt-in for those users (and makes the animation demoable on a machine
+     that has the setting enabled). */
+  function motionOK() {
+    if (/[?&]motion=on/.test(location.search)) return true;
+    return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
   /* ---------- step 1: knockdown vs control ---------- */
   function draw0() {
@@ -265,7 +274,7 @@
   function pulse() {
     clearInterval(pulseTimer);
     var el = document.getElementById('p1'), big = false;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!motionOK()) return;
     pulseTimer = setInterval(function () {
       if (!el || !el.data) return clearInterval(pulseTimer);
       big = !big;
@@ -410,7 +419,7 @@
       document.getElementById('cond').textContent = D.condition;
       show(0);
       observeFit();
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (!motionOK()) {
         pause('Autoplay off (reduced motion)');
         [0, 1, 2].forEach(function (i) { if (!drawn[i]) { DRAW[i](); drawn[i] = true; } });
         panels.forEach(function (p) { p.classList.add('on'); });
