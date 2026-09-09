@@ -425,3 +425,8 @@ p { margin: 0 0 0.95rem; }
   .logo-row img { height: 30px; }
   .logo-row img.logo-row__mark { height: 25px; }
 }
+.applied-note {
+  margin: 0.9rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
